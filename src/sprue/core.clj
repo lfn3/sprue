@@ -4,6 +4,9 @@
            (javax.annotation.processing Generated))
   (:gen-class))
 
+(defn ^"[Ljava.lang.String;" coll-str-arr [strs] (into-array String strs))
+(defn ^"[Ljava.lang.String;" str-arr [& strs] (coll-str-arr strs))
+
 (defn k-mods [& modifiers] (into-array KModifier modifiers))
 
 (defn add-ctor-param [^FunSpec$Builder ctor-builder {:keys [^String name type] :as field}]
@@ -14,9 +17,25 @@
     (->> fields (map (partial add-ctor-param builder)) (dorun))
     (.build builder)))
 
-(defn prop-spec [{:keys [^String name type] :as field}]
+(defn ^ClassName poet-class-name [^String package ^String name & more-name-parts]
+  (ClassName. package name (coll-str-arr more-name-parts)))
+
+(defn add-member [builder [format-str & format-args]]
+  (.addMember builder format-str (coll-str-arr format-args)))
+
+(defn annotation-spec [{:keys [package name members]}]
+  (as-> (AnnotationSpec/builder (poet-class-name package name)) builder
+        (reduce add-member builder members)
+        (.build builder)))
+
+(defn add-annotation [builder annotation] (-> builder (.addAnnotation (annotation-spec annotation))))
+
+(defn add-annotations [builder annotations] (reduce add-annotation builder annotations))
+
+(defn prop-spec [{:keys [^String name type annotations] :as field}]
   (-> (PropertySpec/builder name type (k-mods))
       (.initializer name (into-array []))
+      (add-annotations annotations)
       (.build)))
 
 (defn add-property [^TypeSpec$Builder type-builder field]
@@ -26,7 +45,7 @@
 
 (defn ^AnnotationSpec generated-annotation []
   (-> (AnnotationSpec/builder Generated)
-      (.addMember "%S" (into-array String [generator-name]))
+      (.addMember "%S" (str-arr generator-name))
       (.build)))
 
 (defn class-builder [{:keys [^String name fields] :as class-config}]
@@ -41,9 +60,6 @@
          (map (partial add-property builder))
          (dorun))
     (.build builder)))
-
-(defn ^ClassName poet-class-name [^String package ^String name & more-name-parts]
-  (ClassName. package name (into-array String more-name-parts)))
 
 (defn make-id-class [{:keys [^String name extends] :as class-config}]
   (let [fields [{:name "id"
@@ -94,8 +110,11 @@
 (def sample-class (merge-templates sample-templates
                                    {:name   "Test"
                                     :type   :data
-                                    :fields [{:name "name"
-                                              :type String}]}))
+                                    :fields [{:name        "name"
+                                              :type        String
+                                              :annotations [{:package package
+                                                             :name    "AnAnnotation"
+                                                             :members [["value = %S" "1"]]}]}]}))
 
 (def sample-classes (->> [sample-class]
                          (with-id-classes)
