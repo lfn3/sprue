@@ -5,13 +5,22 @@ and Clojure
 
 ```shell script
 $ lein run
-#  package net.lfn3.sprue
-#  
-#  import java.lang.String
-#  
-#  data class Test(
-#    val name: String
-#  )
+# //Test.kt
+# package net.lfn3.sprue
+# 
+# import java.lang.String
+# 
+# data class Test(
+#   val name: String
+# )
+# //TestId.kt
+# package net.lfn3.sprue
+# 
+# import kotlin.Long
+# 
+# class TestId(
+#   val id: Long
+# ) : Id(id)
 ```
 
 ## License

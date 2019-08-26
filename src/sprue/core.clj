@@ -83,6 +83,7 @@
 
 (defn write-to-str [^FileSpec fs]
   (let [sw (StringWriter.)]
+    (.write sw (str "//" (.getName fs) ".kt\n"))
     (.writeTo fs sw)
     (str sw)))
 
