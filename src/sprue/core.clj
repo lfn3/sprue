@@ -1,6 +1,7 @@
 (ns sprue.core
-  (:import [com.squareup.kotlinpoet TypeSpec FileSpec KModifier FunSpec FunSpec$Builder TypeSpec$Builder PropertySpec ClassName]
-           (java.io StringWriter))
+  (:import [com.squareup.kotlinpoet TypeSpec FileSpec KModifier FunSpec FunSpec$Builder TypeSpec$Builder PropertySpec ClassName AnnotationSpec]
+           (java.io StringWriter)
+           (javax.annotation.processing Generated))
   (:gen-class))
 
 (defn k-mods [& modifiers] (into-array KModifier modifiers))
@@ -21,9 +22,20 @@
 (defn add-property [^TypeSpec$Builder type-builder field]
   (.addProperty type-builder (prop-spec field)))
 
-(defn make-data-class [{:keys [^String name fields]}]
-  (let [builder (doto (TypeSpec/classBuilder name)
-                  (.primaryConstructor (build-ctor fields))
+(def generator-name "net.lfn3.sprue.Core")
+
+(defn ^AnnotationSpec generated-annotation []
+  (-> (AnnotationSpec/builder Generated)
+      (.addMember "%S" (into-array String [generator-name]))
+      (.build)))
+
+(defn class-builder [{:keys [^String name fields] :as class-config}]
+  (doto (TypeSpec/classBuilder name)
+    (.primaryConstructor (build-ctor fields))
+    (.addAnnotation (generated-annotation))))
+
+(defn make-data-class [{:keys [^String name fields] :as class-config}]
+  (let [builder (doto (class-builder class-config)
                   (.addModifiers (k-mods KModifier/DATA)))]
     (->> fields
          (map (partial add-property builder))
@@ -33,12 +45,11 @@
 (defn ^ClassName poet-class-name [^String package ^String name & more-name-parts]
   (ClassName. package name (into-array String more-name-parts)))
 
-(defn make-id-class [{:keys [^String name extends]}]
+(defn make-id-class [{:keys [^String name extends] :as class-config}]
   (let [fields [{:name "id"
                  :type Long/TYPE}]
         [extend-package extends-name] extends
-        builder (doto (TypeSpec/classBuilder name)
-                  (.primaryConstructor (build-ctor fields))
+        builder (doto (class-builder class-config)
                   (.superclass (poet-class-name extend-package extends-name))
                   (.addSuperclassConstructorParameter "id" (into-array Object [])))]
     (->> fields
