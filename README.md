@@ -5,6 +5,15 @@ and Clojure
 
 ```shell script
 $ lein run
+# //IdedTest.kt
+# package net.lfn3.sprue
+# 
+# import java.lang.String
+# 
+# data class IdedTest(
+#   val id: TestId,
+#   val name: String
+# )
 # //Test.kt
 # package net.lfn3.sprue
 # 

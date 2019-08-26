@@ -30,13 +30,16 @@
          (dorun))
     (.build builder)))
 
+(defn ^ClassName poet-class-name [^String package ^String name & more-name-parts]
+  (ClassName. package name (into-array String more-name-parts)))
+
 (defn make-id-class [{:keys [^String name extends]}]
   (let [fields [{:name "id"
                  :type Long/TYPE}]
         [extend-package extends-name] extends
         builder (doto (TypeSpec/classBuilder name)
                   (.primaryConstructor (build-ctor fields))
-                  (.superclass (ClassName. extend-package extends-name (into-array String [])))
+                  (.superclass (poet-class-name extend-package extends-name))
                   (.addSuperclassConstructorParameter "id" (into-array Object [])))]
     (->> fields
          (map (partial add-property builder))
@@ -47,13 +50,21 @@
 (defmethod make-class :data [class-config] (make-data-class class-config))
 (defmethod make-class :id [class-config] (make-id-class class-config))
 
+(defn id-name [class-name] (str class-name "Id"))
+
 (defn id-for [{:keys [name package] :as class-config}]
-  {:name    (str name "Id")
+  {:name    (id-name name)
    :type    :id
    :package package})
 
-(defn with-ids [classes]
-  (concat classes (map id-for classes)))
+(defn with-id-classes [classes] (concat classes (map id-for classes)))
+
+(defn ided-class-for [{:keys [name package] :as class-config}]
+  {:name   (str "Ided" name)
+   :type   :data
+   :fields (cons {:name "id"
+                  :type (poet-class-name package (id-name name))}
+                 (get class-config :fields []))})
 
 (def type-keys #{:id :data})
 
@@ -62,24 +73,27 @@
        (map (fn [k] [k (merge (:all templates) (get templates k))]))
        (into {})))
 
-(defn merge-templates [templates classes]
-  (->> classes
-       (map #(merge %1 (get templates (:type %1))))))
+(defn merge-templates [templates class] (merge class (get templates (:type class))))
 
-(def sample-templates (merge-all-template {:all {:package "net.lfn3.sprue"}
+(def package "net.lfn3.sprue")
+
+(def sample-templates (merge-all-template {:all {:package package}
                                            :id  {:extends ["net.lfn3.sprue" "Id"]}}))
 
-(def sample-classes (->> [{:name   "Test"
-                           :type   :data
-                           :fields [{:name "name"
-                                     :type String}]}]
-                         (merge-templates sample-templates)
-                         (with-ids)
-                         (merge-templates sample-templates)))
+(def sample-class (merge-templates sample-templates
+                                   {:name   "Test"
+                                    :type   :data
+                                    :fields [{:name "name"
+                                              :type String}]}))
+
+(def sample-classes (->> [sample-class]
+                         (with-id-classes)
+                         (concat [(ided-class-for sample-class)])
+                         (map (partial merge-templates sample-templates))))
 
 (defn ^FileSpec wrap-in-file [{:keys [package name] :as class-config}]
   (.build (doto (FileSpec/builder package name)
-     (.addType (make-class class-config)))))
+            (.addType (make-class class-config)))))
 
 (defn write-to-str [^FileSpec fs]
   (let [sw (StringWriter.)]
