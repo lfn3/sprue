@@ -1,5 +1,6 @@
 (ns sprue.core
-  (:require [sprue.kotlin-output :as kotlin])
+  (:require [sprue.kotlin-output :as kotlin]
+            [sprue.java-output :as java])
   (:import (java.io StringWriter OutputStreamWriter))
   (:gen-class))
 
@@ -16,7 +17,7 @@
   {:name   (str "Ided" name)
    :type   :data
    :fields (cons {:name "id"
-                  :type (kotlin/poet-class-name package (id-name name))}
+                  :type (java/poet-class-name package (id-name name))}
                  (get class-config :fields []))})
 
 (def type-keys #{:id :data})
@@ -58,6 +59,6 @@
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  (->> (kotlin/emit-classes sample-classes string-writer-for str)
+  (->> (java/emit-classes sample-classes string-writer-for str)
        (map println)
        (dorun)))
