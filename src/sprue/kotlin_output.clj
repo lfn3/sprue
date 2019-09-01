@@ -23,8 +23,8 @@
     (->> fields (map (partial add-ctor-param builder)) (dorun))
     (.build builder)))
 
-(defn add-member [builder [format-str & format-args]]
-  (.addMember builder format-str (jiu/coll-str-arr format-args)))
+(defn add-member [builder [name format-str & format-args]]
+  (.addMember builder (str name " = %" format-str) (jiu/coll-str-arr format-args)))
 
 (defn annotation-spec [{:keys [package name members]}]
   (as-> (AnnotationSpec/builder (poet-class-name package name)) builder

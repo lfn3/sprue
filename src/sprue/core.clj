@@ -1,7 +1,8 @@
 (ns sprue.core
   (:require [sprue.kotlin-output :as kotlin]
             [sprue.specs :as specs]
-            [sprue.java-output :as java])
+            [sprue.java-output :as java]
+            [clojure.string :as str])
   (:import (java.io StringWriter OutputStreamWriter))
   (:gen-class))
 
@@ -40,7 +41,7 @@
                                               :type        String
                                               :annotations [{:package package
                                                              :name    "AnAnnotation"
-                                                             :members [["value = %S" "1"]]}]}]}))
+                                                             :members [["value" "S" "1"]]}]}]}))
 
 (def sample-classes (->> [sample-class]
                          (with-id-classes)
@@ -49,8 +50,11 @@
 
 (defn string-writer-for [file-suffix]
   (fn [package filename]
-    (doto (StringWriter.)
-      (.write (str "//" package \. filename file-suffix \newline)))))
+    (let [filename-comment (if (str/ends-with? package filename)
+                             (str "//" package file-suffix \newline)
+                             (str "//" package \. filename file-suffix \newline))]
+     (doto (StringWriter.)
+       (.write filename-comment)))))
 
 (def file-suffixes
   {"kotlin" ".kt"
