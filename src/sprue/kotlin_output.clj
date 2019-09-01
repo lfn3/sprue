@@ -1,20 +1,27 @@
 (ns sprue.kotlin-output
-  (:require [sprue.java-interop-util :as jiu])
+  (:require [sprue.java-interop-util :as jiu]
+            [sprue.specs :as specs])
   (:import (com.squareup.kotlinpoet TypeSpec FileSpec KModifier FunSpec FunSpec$Builder TypeSpec$Builder PropertySpec ClassName AnnotationSpec)
            (java.io Writer)))
 
 (defn k-mods [& modifiers] (into-array KModifier modifiers))
 
+(defn ^ClassName poet-class-name [^String package ^String name & more-name-parts]
+  (ClassName. package name (jiu/coll-str-arr more-name-parts)))
+
+(defn convert-type [type]
+  (if (vector? type)
+    (let [[package class] type]
+      (poet-class-name package class))
+    type))
+
 (defn add-ctor-param [^FunSpec$Builder ctor-builder {:keys [^String name type] :as field}]
-  (.addParameter ctor-builder name type (k-mods)))
+  (.addParameter ctor-builder name (convert-type type) (k-mods)))
 
 (defn build-ctor [fields]
   (let [builder (FunSpec/constructorBuilder)]
     (->> fields (map (partial add-ctor-param builder)) (dorun))
     (.build builder)))
-
-(defn ^ClassName poet-class-name [^String package ^String name & more-name-parts]
-  (ClassName. package name (jiu/coll-str-arr more-name-parts)))
 
 (defn add-member [builder [format-str & format-args]]
   (.addMember builder format-str (jiu/coll-str-arr format-args)))
@@ -29,7 +36,7 @@
 (defn add-annotations [builder annotations] (reduce add-annotation builder annotations))
 
 (defn prop-spec [{:keys [^String name type annotations] :as field}]
-  (-> (PropertySpec/builder name type (k-mods))
+  (-> (PropertySpec/builder name (convert-type type) (k-mods))
       (.initializer name (into-array []))
       (add-annotations annotations)
       (.build)))
@@ -60,16 +67,12 @@
 (defn make-id-class [{:keys [^String name extends] :as class-config}]
   (let [fields [{:name "id"
                  :type Long/TYPE}]
-        [extend-package extends-name] extends
-        builder (doto (class-builder class-config)
-                  (.superclass (poet-class-name extend-package extends-name))
+        builder (doto (class-builder (assoc class-config :fields fields))
+                  (.superclass (convert-type extends))
                   (.addSuperclassConstructorParameter "id" (into-array Object [])))]
-    (->> fields
-         (map (partial add-property builder))
-         (dorun))
     (.build builder)))
 
-(defmulti make-class :type)
+(defmulti make-class ::specs/generator)
 (defmethod make-class :data [class-config] (make-data-class class-config))
 (defmethod make-class :id [class-config] (make-id-class class-config))
 

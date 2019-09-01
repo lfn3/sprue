@@ -1,5 +1,6 @@
 (ns sprue.java-output
-  (:require [sprue.java-interop-util :as jiu])
+  (:require [sprue.java-interop-util :as jiu]
+            [sprue.specs :as specs])
   (:import (com.squareup.javapoet JavaFile TypeSpec MethodSpec AnnotationSpec ClassName TypeSpec$Builder)
            (java.io Writer)))
 
@@ -30,7 +31,7 @@
       (class-builder)
       (.build)))
 
-(defmulti make-class :type)
+(defmulti make-class ::specs/generator)
 (defmethod make-class :data [class-config] (make-data-class class-config))
 (defmethod make-class :id [class-config] (make-id-class class-config))
 
