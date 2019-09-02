@@ -3,7 +3,7 @@
             [sprue.specs :as specs]
             [sprue.java-output :as java]
             [clojure.string :as str])
-  (:import (java.io StringWriter OutputStreamWriter))
+  (:import (java.io StringWriter))
   (:gen-class))
 
 (defn id-name [class-name] (str class-name "Id"))
@@ -19,8 +19,8 @@
   {:name             (str "Ided" name)
    ::specs/generator :data
    :fields           (cons {:name "id"
-                  :type [package (id-name name)]}
-                 (get class-config :fields []))})
+                            :type [package (id-name name)]}
+                           (get class-config :fields []))})
 
 (defn merge-all-template [templates]
   (->> specs/generator-types
@@ -38,10 +38,9 @@
                                    {:name             "Test"
                                     ::specs/generator :data
                                     :fields           [{:name        "name"
-                                              :type        String
-                                              :annotations [{:package package
-                                                             :name    "AnAnnotation"
-                                                             :members [["value" "S" "1"]]}]}]}))
+                                                        :type        String
+                                                        :annotations [{:type    [package "AnAnnotation"]
+                                                                       :members [["value" "S" "1"]]}]}]}))
 
 (def sample-classes (->> [sample-class]
                          (with-id-classes)
@@ -53,16 +52,16 @@
     (let [filename-comment (if (str/ends-with? package filename)
                              (str "//" package file-suffix \newline)
                              (str "//" package \. filename file-suffix \newline))]
-     (doto (StringWriter.)
-       (.write filename-comment)))))
+      (doto (StringWriter.)
+        (.write filename-comment)))))
 
 (def file-suffixes
   {"kotlin" ".kt"
-   "java" ".java"})
+   "java"   ".java"})
 
 (def emitters
   {"kotlin" kotlin/emit-classes
-   "java" java/emit-classes})
+   "java"   java/emit-classes})
 
 (defn -main
   "I don't do a whole lot ... yet."

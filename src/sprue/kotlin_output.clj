@@ -26,8 +26,8 @@
 (defn add-member [builder [name format-str & format-args]]
   (.addMember builder (str name " = %" format-str) (jiu/coll-str-arr format-args)))
 
-(defn annotation-spec [{:keys [package name members]}]
-  (as-> (AnnotationSpec/builder (poet-class-name package name)) builder
+(defn annotation-spec [{:keys [type members]}]
+  (as-> (AnnotationSpec/builder (convert-type type)) builder
         (reduce add-member builder members)
         (.build builder)))
 
