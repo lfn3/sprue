@@ -1,7 +1,10 @@
 (ns sprue.repl-test
   (:require [clojure.test :refer :all]
             [sprue.repl]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [sprue.test-util :as tu]))
+
+(tu/use-standard-fixtures)
 
 (def test-namespace "net.lfn3.sprue")
 

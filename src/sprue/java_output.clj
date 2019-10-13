@@ -227,4 +227,4 @@
 
 (s/fdef render-to-javafile
         :args (s/cat :type :sprue.input.normalized/type)
-        :ret JavaFile)
+        :ret (partial instance? JavaFile))
