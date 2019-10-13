@@ -1,36 +1,22 @@
 # sprue
 
-Quick sketch of generating models classes as Kotlin data classes using [KotlinPoet](https://github.com/square/kotlinpoet)
-and Clojure
+Repl driven tool for generating models. 
 
-```shell script
-$ lein run
-# //IdedTest.kt
-# package net.lfn3.sprue
-# 
-# import java.lang.String
-# 
-# data class IdedTest(
-#   val id: TestId,
-#   val name: String
-# )
-# //Test.kt
-# package net.lfn3.sprue
-# 
-# import java.lang.String
-# 
-# data class Test(
-#   val name: String
-# )
-# //TestId.kt
-# package net.lfn3.sprue
-# 
-# import kotlin.Long
-# 
-# class TestId(
-#   val id: Long
-# ) : Id(id)
-```
+### TODO
+
+- ~~Compat tests~~
+- Fix dodgy `base-class` handling
+  - No `extends` keyword
+  - Fields and getters still showing up in subclass
+- How does it handle generic fields? e.g. `Collection<Long>`?
+- Implement interfaces
+- Move repl required defs off to config file somewhere? Maybe split out ns
+- More specific specs for flags
+- Postgres schema generator
+- Some way of producing referential or cut down entities 
+  (think create/update case)
+- Generate Jooq mappers
+- Wiring from API end?
 
 ## License
 
