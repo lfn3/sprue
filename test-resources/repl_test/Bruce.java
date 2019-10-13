@@ -8,11 +8,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import net.lfn3.sprue.Batman;
 import net.lfn3.sprue.BruceId;
 import net.lfn3.sprue.BruceLogId;
 
-@Generated("net.lfn3.sprue.java_output_from_normalized.clj")
-public class Bruce {
+@Generated("net.lfn3.sprue.java_output.clj")
+public class Bruce extends Batman {
   public static final String BRUCE_ID_SERIALIZER_FIELD_NAME = "lfn3_bruce_id";
 
   public static final String BRUCE_LOG_ID_SERIALIZER_FIELD_NAME = "lfn3_bruce_log_id";
@@ -87,16 +88,17 @@ public class Bruce {
   }
 
   public int hashcode() {
-    Objects.hash(id, logId, effectiveDate, inEffect, username, aField);
+    return Objects.hash(id, logId, effectiveDate, inEffect, username, aField);
   }
 
   public String toString() {
-    "Bruce{"+ ", " + 
-     Object.toString(id)+ ", " + 
-     Object.toString(logId)+ ", " + 
-     Object.toString(effectiveDate)+ ", " + 
-     Object.toString(inEffect)+ ", " + 
-     Object.toString(username)+ ", " + 
-     Object.toString(aField)"}" + super.toString();
+    return "Bruce{" +
+    	Object.toString(id) + ", " +
+    	Object.toString(logId) + ", " +
+    	Object.toString(effectiveDate) + ", " +
+    	Object.toString(inEffect) + ", " +
+    	Object.toString(username) + ", " +
+    	Object.toString(aField) + "}" +
+    	super.toString();
   }
 }

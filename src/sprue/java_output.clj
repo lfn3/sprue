@@ -18,13 +18,8 @@
 (defn ^AnnotationSpec generated-annotation []
   (-> (poet-class-name "javax.annotation.processing" "Generated")
       (AnnotationSpec/builder)
-      (.addMember "value" "$S" (jiu/str-arr "net.lfn3.sprue.java_output_from_normalized.clj"))
+      (.addMember "value" "$S" (jiu/str-arr "net.lfn3.sprue.java_output.clj"))
       (.build)))
-
-(defn ^TypeSpec$Builder class-builder [name]
-  (doto (TypeSpec/classBuilder name)
-    (.addModifiers (into-array [Modifier/PUBLIC]))
-    (.addAnnotation (generated-annotation))))
 
 (defn find-flags [flags name]
   (->> flags (filter (comp (partial = name) :name))))
@@ -38,6 +33,13 @@
 (defn find-flag [flags name]
   (-> flags (find-flags name) (util/highlander (str "Expected exactly one flag with name " name " in flags"))))
 
+(defn ^TypeSpec$Builder class-builder [name flags]
+  (let [builder (TypeSpec/classBuilder name)
+        base-class-flag (find-optional-flag flags :base-type)]
+    (-> builder
+        (.addModifiers (into-array [Modifier/PUBLIC]))
+        (.addAnnotation (generated-annotation))
+        (cond-> base-class-flag (.superclass (convert-type (:base-type base-class-flag)))))))
 (defn is-const-field? [field]
   (->> (:flags field)
        (map :name)
@@ -57,14 +59,14 @@
 
 (defn get-supertype-fields [fields flags]
   (if-let [flag (find-optional-flag flags :base-type)]
-    (filter (:super-ctor-fields flag) fields)
+    (filter (comp (:super-ctor-fields flag) :name) fields)
     nil))
 
 (defn get-instance-fields [fields flags]
   (let [flag (find-optional-flag flags :base-type)
         super-field-names (:super-ctor-fields flag)]
     (if (seq super-field-names)
-      (filter (comp not super-field-names) fields)
+      (filter (comp not super-field-names :name) fields)
       fields)))
 
 (defn ^CodeBlock set-field [field]
@@ -164,29 +166,35 @@
   class-builder)
 
 (defn add-hashcode-method [class-builder fields]
-  (let [methodSpec
-        (-> (MethodSpec/methodBuilder "hashcode")
-            (.returns Integer/TYPE)
-            (.addModifiers (into-array [Modifier/PUBLIC]))
-            (.addCode (str "Objects.hash(" (str/join ", " (map :name fields)) ");\n") (jiu/str-arr))
-            (.build))]
-    (.addMethod class-builder methodSpec)))
+  (when (seq fields)
+   (let [methodSpec
+         (-> (MethodSpec/methodBuilder "hashcode")
+             (.returns Integer/TYPE)
+             (.addModifiers (into-array [Modifier/PUBLIC]))
+             (.addCode (str "return Objects.hash(" (str/join ", " (map :name fields)) ");\n") (jiu/str-arr))
+             (.build))]
+     (.addMethod class-builder methodSpec)))
+  class-builder)
 
-(defn add-field-to-string-line [method-builder field]
-  (.addCode method-builder "+ \", \" + \n Object.toString($N)" (jiu/str-arr (:name field))))
+(defn field-to-string-line [field]
+  (str "Object.toString(" (:name field) ")"))
 
 (defn add-to-string-method [class-builder name has-superclass? fields]
   (let [method-builder (-> "toString"
                            (MethodSpec/methodBuilder)
                            (.addModifiers (into-array [Modifier/PUBLIC]))
                            (.returns String)
-                           (.addCode "$S" (jiu/str-arr (str name "{"))))]
-    (->> fields
-         (map (partial add-field-to-string-line method-builder))
-         (dorun))
+                           (.addCode "return $S" (jiu/str-arr (str name "{"))))]
+    (when (seq fields)
+     (.addCode method-builder
+               (->> fields
+                    (map field-to-string-line)
+                    (str/join " + \", \" +\n\t")
+                    (str " +\n\t"))
+               (jiu/str-arr)))
     (.addMethod class-builder (-> method-builder
-                                  (.addCode "$S" (jiu/str-arr "}"))
-                                  (cond-> has-superclass? (.addCode " + super.toString()" (jiu/str-arr)))
+                                  (.addCode " + $S" (jiu/str-arr "}"))
+                                  (cond-> has-superclass? (.addCode " +\n\tsuper.toString()" (jiu/str-arr)))
                                   (.addCode ";\n" (jiu/str-arr))
                                   (.build)))))
 
@@ -209,16 +217,18 @@
 
 (defn ^JavaFile render-to-javafile [{:keys [name namespace fields flags]}]
   (let [non-const-fields (filter (comp not is-const-field?) fields)
+        const-fields (filter is-const-field? fields)
         instance-fields (get-instance-fields non-const-fields flags)
         has-superclass? (find-optional-flag flags :base-type)
-        class-def (-> (class-builder name)
-                      (add-fields fields)
+        class-def (-> (class-builder name flags)
+                      (add-fields const-fields)
+                      (add-fields instance-fields)
                       (add-constructor non-const-fields flags)
-                      (add-getter-methods non-const-fields)
+                      (add-getter-methods instance-fields)
                       (add-equals-method name
                                          has-superclass?
                                          instance-fields)
-                      (add-hashcode-method non-const-fields)
+                      (add-hashcode-method instance-fields)
                       (add-to-string-method name has-superclass? instance-fields)
                       (.build))]
     (-> (str namespace \. name)

@@ -5,9 +5,9 @@ Repl driven tool for generating models.
 ### TODO
 
 - ~~Compat tests~~
-- Fix dodgy `base-class` handling
-  - No `extends` keyword
-  - Fields and getters still showing up in subclass
+~~- Fix dodgy `base-class` handling~~
+  ~~- No `extends` keyword~~
+  ~~- Fields and getters still showing up in subclass~~
 - How does it handle generic fields? e.g. `Collection<Long>`?
 - Implement interfaces
 - Move repl required defs off to config file somewhere? Maybe split out ns
