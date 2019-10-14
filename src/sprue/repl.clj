@@ -49,7 +49,7 @@
 (defn id-field-flags [type-name const-field-name]
   ;TODO: rip out assumptions around these values
   ;TODO: also probably shouldn't bother emitting these (or the constants) if the suffixes and prefixes are blank.
-  [{:name :serialize-field-name-as :value (str type-name \. const-field-name)}
+  [{:name :serialize-field-name-as :value const-field-name}
    {:name :serialize-field-value-as :value Long/TYPE}])
 
 (defn entity-type* [name fields namespace api-id-prefix api-id-suffix]

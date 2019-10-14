@@ -23,7 +23,7 @@ Repl driven tool for generating models.
 - ~~Don't need `Object.toString` in `toString` method~~
 - ~~Annotation `@Nullable` not on getter or ctor param~~
 - ~~Some of the strings we emit could be characters (mostly `"}"`)~~
-- Don't need classname qualifier on use of const field.
+- ~~Don't need classname qualifier on use of const field.~~
 - ~~Should be `isInEffect` not `getInEffect`.~~
 - Flag for suppressing `toString` when we want it to come from the base class
 - Figure out (and demonstrate (in a test?)) how to get in between the entity creation and generation phase and strip

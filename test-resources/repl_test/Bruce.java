@@ -16,13 +16,13 @@ public class Bruce extends Batman implements Dated {
 
   public static final String BRUCE_LOG_ID_SERIALIZER_FIELD_NAME = "lfn3_bruce_log_id";
 
-  @JsonProperty(Bruce.BRUCE_ID_SERIALIZER_FIELD_NAME)
+  @JsonProperty(BRUCE_ID_SERIALIZER_FIELD_NAME)
   @ApiModelProperty(
       dataType = "long"
   )
   private final BruceId id;
 
-  @JsonProperty(Bruce.BRUCE_LOG_ID_SERIALIZER_FIELD_NAME)
+  @JsonProperty(BRUCE_LOG_ID_SERIALIZER_FIELD_NAME)
   @ApiModelProperty(
       dataType = "long"
   )
