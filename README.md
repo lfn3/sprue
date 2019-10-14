@@ -23,6 +23,7 @@ Repl driven tool for generating models.
 - Don't need `Object.toString` in `toString` method
 - `@Nullable` not on getter or ctor param
 - Some of the strings we emit could be characters (mostly `"}"`)
+- Don't need classname qualifier on use of const field.
 - Postgres schema/DDL generator
 - Fix up equals methods
 - Move repl required defs off to config file somewhere? Maybe split out ns
