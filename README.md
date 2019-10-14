@@ -26,6 +26,8 @@ Repl driven tool for generating models.
 - Generate Jooq mappers
 - Wiring from API end?
 - Check fields mentioned in `base-type` are in the field definition?
+- Builder generator?
+  - Probably want a `default` flag on fields for this case (which could also emit something into the swagger annotation?)
 
 ## License
 
