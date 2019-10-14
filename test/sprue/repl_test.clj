@@ -14,7 +14,8 @@
                                test-namespace
                                "lfn3_"
                                "_id")
-      (update :flags conj {:name :base-type :base-type [test-namespace "Batman"]})))
+      (update :flags conj {:name :base-type :base-type [test-namespace "Batman"]})
+      (update :flags conj {:name :implements :interface-type [test-namespace "Dated"]})))
 
 (def entity-path "repl_test/Bruce.java")
 

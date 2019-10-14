@@ -35,7 +35,11 @@
 
 (defn ^TypeSpec$Builder class-builder [name flags]
   (let [builder (TypeSpec/classBuilder name)
-        base-class-flag (find-optional-flag flags :base-type)]
+        base-class-flag (find-optional-flag flags :base-type)
+        implements-flags (find-flags flags :implements)]
+    (->> implements-flags
+         (map #(.addSuperinterface builder (convert-type (:interface-type %1))))
+         (dorun))
     (-> builder
         (.addModifiers (into-array [Modifier/PUBLIC]))
         (.addAnnotation (generated-annotation))

@@ -11,9 +11,10 @@ import javax.annotation.processing.Generated;
 import net.lfn3.sprue.Batman;
 import net.lfn3.sprue.BruceId;
 import net.lfn3.sprue.BruceLogId;
+import net.lfn3.sprue.Dated;
 
 @Generated("net.lfn3.sprue.java_output.clj")
-public class Bruce extends Batman {
+public class Bruce extends Batman implements Dated {
   public static final String BRUCE_ID_SERIALIZER_FIELD_NAME = "lfn3_bruce_id";
 
   public static final String BRUCE_LOG_ID_SERIALIZER_FIELD_NAME = "lfn3_bruce_log_id";
