@@ -26,8 +26,12 @@ Repl driven tool for generating models.
 - Don't need classname qualifier on use of const field.
 - ~~Should be `isInEffect` not `getInEffect`.~~
 - Flag for suppressing `toString` when we want it to come from the base class
+- Figure out (and demonstrate (in a test?)) how to get in between the entity creation and generation phase and strip
+  out a field
+    - Might be a good idea to normalize the model before we strip out the field? 
+    (that way I can use the `find-flag...` methods)
 - Postgres schema/DDL generator
-- Fix up equals methods
+- Fix up equals methods according to TODOS
 - Move repl required defs off to config file somewhere? Maybe split out ns
 - More specific specs for flags
 - Some way of producing referential or cut down entities 
