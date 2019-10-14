@@ -24,6 +24,8 @@ Repl driven tool for generating models.
 - `@Nullable` not on getter or ctor param
 - Some of the strings we emit could be characters (mostly `"}"`)
 - Don't need classname qualifier on use of const field.
+- Should be `isInEffect` not `getInEffect`
+- Flag for suppressing `equals` when we want it to come from the base class
 - Postgres schema/DDL generator
 - Fix up equals methods
 - Move repl required defs off to config file somewhere? Maybe split out ns
