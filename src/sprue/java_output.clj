@@ -3,7 +3,7 @@
             [sprue.java-interop-util :as jiu]
             [sprue.util :as util]
             [clojure.string :as str])
-  (:import (com.squareup.javapoet TypeSpec TypeSpec$Builder ClassName AnnotationSpec JavaFile FieldSpec CodeBlock FieldSpec$Builder MethodSpec MethodSpec$Builder)
+  (:import (com.squareup.javapoet TypeSpec TypeSpec$Builder ClassName AnnotationSpec JavaFile FieldSpec CodeBlock FieldSpec$Builder MethodSpec MethodSpec$Builder ParameterSpec)
            (javax.lang.model.element Modifier)))
 
 (defn ^ClassName poet-class-name [package name & more-name-parts]
@@ -58,8 +58,16 @@
                         ")")]
     (CodeBlock/of format-str (to-array (map :name fields)))))
 
-(defn add-parameter [^MethodSpec$Builder method-builder {:keys [type name] :as field}]
-  (.addParameter method-builder (convert-type type) name (jiu/empty-arr Modifier)))
+(def ^AnnotationSpec nullable-annotation (-> (convert-type ["javax.annotation" "Nullable"])
+                                             (AnnotationSpec/builder)
+                                             (.build)))
+
+(defn add-parameter [^MethodSpec$Builder method-builder {:keys [type name flags] :as field}]
+  (let [optional? (find-optional-flag flags :optional)]
+   (-> (ParameterSpec/builder (convert-type type) name (jiu/empty-arr Modifier))
+       (cond-> optional? (.addAnnotation nullable-annotation))
+       (.build)
+       (->> (.addParameter method-builder)))))
 
 (defn get-supertype-fields [fields flags]
   (if-let [flag (find-optional-flag flags :base-type)]
@@ -108,10 +116,6 @@
   (-> (AnnotationSpec/builder swagger-api-model-prop-annotation-type)
       (.addMember "dataType" "$S" (jiu/str-arr (str type)))
       (.build)))
-
-(def ^AnnotationSpec nullable-annotation (-> (convert-type ["javax.annotation" "Nullable"])
-                                             (AnnotationSpec/builder)
-                                             (.build)))
 
 (defn add-field [class-builder {:keys [name type flags] :as field}]
   (let [initializer-flag (find-optional-flag flags :initializer)
@@ -201,12 +205,14 @@
                                   (.addCode ";\n" (jiu/str-arr))
                                   (.build)))))
 
-(defn getter-for [{:keys [name type] :as field}]
+(defn getter-for [{:keys [name type flags] :as field}]
   (let [prefix (if (#{Boolean Boolean/TYPE} type)
                  "is"
-                 "get")]
+                 "get")
+        optional? (find-optional-flag flags :optional)]
    (-> (str prefix (Character/toUpperCase (first name)) (.substring name 1))
        (MethodSpec/methodBuilder)
+       (cond-> optional? (.addAnnotation nullable-annotation))
        (.addModifiers (into-array [Modifier/PUBLIC]))
        (.returns (convert-type type))
        (.addCode (str "return this." name ";\n") (jiu/str-arr))

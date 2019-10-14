@@ -38,7 +38,7 @@ public class Bruce extends Batman implements Dated {
   private final BigDecimal aField;
 
   public Bruce(BruceId id, BruceLogId logId, LocalDate effectiveDate, boolean inEffect,
-      String username, BigDecimal aField) {
+      String username, @Nullable BigDecimal aField) {
     super(id, logId, effectiveDate, inEffect, username, aField);
     this.id = id;
     this.logId = logId;
@@ -68,6 +68,7 @@ public class Bruce extends Batman implements Dated {
     return this.username;
   }
 
+  @Nullable
   public BigDecimal getAField() {
     return this.aField;
   }
