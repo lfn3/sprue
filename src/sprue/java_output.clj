@@ -158,7 +158,7 @@
    (let [method-spec (-> (MethodSpec/methodBuilder "equals")
                          (.returns Boolean/TYPE)
                          (.addModifiers (into-array [Modifier/PUBLIC]))
-                         (.addParameter Object "o" (into-array [Modifier/PUBLIC]))
+                         (.addParameter Object "o" (jiu/empty-arr Modifier))
                          (.addStatement "if (o == null || getClass() != o.getClass()) return false" (jiu/str-arr))
                          (.addStatement "if (this == o) return true" (jiu/str-arr))
                          (.addStatement "$1L that = ($1L) o" (jiu/str-arr name))

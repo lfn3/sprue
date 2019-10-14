@@ -71,7 +71,7 @@ public class Bruce extends Batman implements Dated {
     return this.aField;
   }
 
-  public boolean equals(public Object o) {
+  public boolean equals(Object o) {
     if (o == null || getClass() != o.getClass()) return false;
     if (this == o) return true;
     Bruce that = (Bruce) o;

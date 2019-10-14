@@ -18,7 +18,7 @@ Repl driven tool for generating models.
     and I think I know how I want to write that, even.
 - ~~Implement interfaces~~
 - ~~Package includes type name~~
-- For some reason the equals method has `public` on the parameter?
+- ~~For some reason the equals method has `public` on the parameter?~~
 - Not importing `Objects`
 - Don't need `Object.toString` in `toString` method
 - `@Nullable` not on getter or ctor param
