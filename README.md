@@ -19,7 +19,7 @@ Repl driven tool for generating models.
 - ~~Implement interfaces~~
 - ~~Package includes type name~~
 - ~~For some reason the equals method has `public` on the parameter?~~
-- Not importing `Objects`
+- ~~Not importing `Objects`.~~
 - ~~Don't need `Object.toString` in `toString` method~~
 - `@Nullable` not on getter or ctor param
 - ~~Some of the strings we emit could be characters (mostly `"}"`)~~

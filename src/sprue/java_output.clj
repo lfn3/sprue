@@ -143,13 +143,15 @@
        (dorun))
   class-builder)
 
+(def java-util-objects-as-arr (into-array Object [(convert-type (convert-type ["java.util" "Objects"]))]))
+
 (defn add-equals-lines [builder fields]
   (let [code-str (str (->> fields
                            (map :name)
-                           (map #(str "Objects.equals(this." %1 ", that." %1 ")"))
+                           (map #(str "$1T.equals(this." %1 ", that." %1 ")"))
                            (str/join " &&\n\t"))
                       ";\n")]
-    (.addCode builder code-str (jiu/str-arr))))
+    (.addCode builder code-str java-util-objects-as-arr)))
 
 (defn add-equals-method [class-builder name has-superclass? fields]
   ;TODO could be improved if we know a field is a) nullable and b) primitive
@@ -175,7 +177,7 @@
          (-> (MethodSpec/methodBuilder "hashcode")
              (.returns Integer/TYPE)
              (.addModifiers (into-array [Modifier/PUBLIC]))
-             (.addCode (str "return Objects.hash(" (str/join ", " (map :name fields)) ");\n") (jiu/str-arr))
+             (.addCode (str "return $T.hash(" (str/join ", " (map :name fields)) ");\n") java-util-objects-as-arr)
              (.build))]
      (.addMethod class-builder methodSpec)))
   class-builder)
