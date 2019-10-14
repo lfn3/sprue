@@ -180,9 +180,6 @@
      (.addMethod class-builder methodSpec)))
   class-builder)
 
-(defn field-to-string-line [field]
-  (str "Object.toString(" (:name field) ")"))
-
 (defn add-to-string-method [class-builder name has-superclass? fields]
   (let [method-builder (-> "toString"
                            (MethodSpec/methodBuilder)
@@ -192,7 +189,7 @@
     (when (seq fields)
      (.addCode method-builder
                (->> fields
-                    (map field-to-string-line)
+                    (map :name)
                     (str/join " + \", \" +\n\t")
                     (str " +\n\t"))
                (jiu/str-arr)))

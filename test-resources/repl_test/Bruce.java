@@ -90,12 +90,12 @@ public class Bruce extends Batman implements Dated {
 
   public String toString() {
     return "Bruce{" +
-    	Object.toString(id) + ", " +
-    	Object.toString(logId) + ", " +
-    	Object.toString(effectiveDate) + ", " +
-    	Object.toString(inEffect) + ", " +
-    	Object.toString(username) + ", " +
-    	Object.toString(aField) + '}' +
+    	id + ", " +
+    	logId + ", " +
+    	effectiveDate + ", " +
+    	inEffect + ", " +
+    	username + ", " +
+    	aField + '}' +
     	super.toString();
   }
 }

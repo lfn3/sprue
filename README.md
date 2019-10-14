@@ -20,12 +20,12 @@ Repl driven tool for generating models.
 - ~~Package includes type name~~
 - ~~For some reason the equals method has `public` on the parameter?~~
 - Not importing `Objects`
-- Don't need `Object.toString` in `toString` method
+- ~~Don't need `Object.toString` in `toString` method~~
 - `@Nullable` not on getter or ctor param
 - ~~Some of the strings we emit could be characters (mostly `"}"`)~~
 - Don't need classname qualifier on use of const field.
 - Should be `isInEffect` not `getInEffect`
-- Flag for suppressing `equals` when we want it to come from the base class
+- Flag for suppressing `toString` when we want it to come from the base class
 - Postgres schema/DDL generator
 - Fix up equals methods
 - Move repl required defs off to config file somewhere? Maybe split out ns
