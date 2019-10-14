@@ -1,4 +1,4 @@
-package net.lfn3.sprue.Bruce;
+package net.lfn3.sprue;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
@@ -8,10 +8,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
-import net.lfn3.sprue.Batman;
-import net.lfn3.sprue.BruceId;
-import net.lfn3.sprue.BruceLogId;
-import net.lfn3.sprue.Dated;
 
 @Generated("net.lfn3.sprue.java_output.clj")
 public class Bruce extends Batman implements Dated {

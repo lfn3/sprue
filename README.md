@@ -17,7 +17,7 @@ Repl driven tool for generating models.
     JavaPoet has `ParameterizedTypeName` which will probably be what should be used for the implementation,
     and I think I know how I want to write that, even.
 - ~~Implement interfaces~~
-- Package includes type name
+- ~~Package includes type name~~
 - For some reason the equals method has `public` on the parameter?
 - Not importing `Objects`
 - Don't need `Object.toString` in `toString` method

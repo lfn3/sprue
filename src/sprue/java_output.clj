@@ -235,7 +235,7 @@
                       (add-hashcode-method instance-fields)
                       (add-to-string-method name has-superclass? instance-fields)
                       (.build))]
-    (-> (str namespace \. name)
+    (-> namespace
         (JavaFile/builder class-def)
         (.build))))
 
