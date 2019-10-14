@@ -10,7 +10,7 @@ public class BruceId extends BaseId {
   }
 
   public String toString() {
-    return "BruceId{" + "}" +
+    return "BruceId{" + '}' +
     	super.toString();
   }
 }

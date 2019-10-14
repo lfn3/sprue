@@ -95,7 +95,7 @@ public class Bruce extends Batman implements Dated {
     	Object.toString(effectiveDate) + ", " +
     	Object.toString(inEffect) + ", " +
     	Object.toString(username) + ", " +
-    	Object.toString(aField) + "}" +
+    	Object.toString(aField) + '}' +
     	super.toString();
   }
 }

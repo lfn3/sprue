@@ -197,7 +197,7 @@
                     (str " +\n\t"))
                (jiu/str-arr)))
     (.addMethod class-builder (-> method-builder
-                                  (.addCode " + $S" (jiu/str-arr "}"))
+                                  (.addCode " + '}'" (jiu/str-arr))
                                   (cond-> has-superclass? (.addCode " +\n\tsuper.toString()" (jiu/str-arr)))
                                   (.addCode ";\n" (jiu/str-arr))
                                   (.build)))))

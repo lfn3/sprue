@@ -22,7 +22,7 @@ Repl driven tool for generating models.
 - Not importing `Objects`
 - Don't need `Object.toString` in `toString` method
 - `@Nullable` not on getter or ctor param
-- Some of the strings we emit could be characters (mostly `"}"`)
+- ~~Some of the strings we emit could be characters (mostly `"}"`)~~
 - Don't need classname qualifier on use of const field.
 - Should be `isInEffect` not `getInEffect`
 - Flag for suppressing `equals` when we want it to come from the base class
