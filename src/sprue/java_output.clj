@@ -202,12 +202,15 @@
                                   (.build)))))
 
 (defn getter-for [{:keys [name type] :as field}]
-  (-> (str "get" (Character/toUpperCase (first name)) (.substring name 1))
-      (MethodSpec/methodBuilder)
-      (.addModifiers (into-array [Modifier/PUBLIC]))
-      (.returns (convert-type type))
-      (.addCode (str "return this." name ";\n") (jiu/str-arr))
-      (.build)))
+  (let [prefix (if (#{Boolean Boolean/TYPE} type)
+                 "is"
+                 "get")]
+   (-> (str prefix (Character/toUpperCase (first name)) (.substring name 1))
+       (MethodSpec/methodBuilder)
+       (.addModifiers (into-array [Modifier/PUBLIC]))
+       (.returns (convert-type type))
+       (.addCode (str "return this." name ";\n") (jiu/str-arr))
+       (.build))))
 
 (defn add-getter-method [class-builder field]
   (.addMethod class-builder (getter-for field)))

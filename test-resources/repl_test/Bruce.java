@@ -60,7 +60,7 @@ public class Bruce extends Batman implements Dated {
     return this.effectiveDate;
   }
 
-  public boolean getInEffect() {
+  public boolean isInEffect() {
     return this.inEffect;
   }
 
