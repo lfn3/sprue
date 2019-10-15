@@ -2,7 +2,8 @@
   (:require [clojure.test :refer :all]
             [sprue.repl]
             [clojure.java.io :as io]
-            [sprue.test-util :as tu]))
+            [sprue.test-util :as tu]
+            [clojure.set :as set]))
 
 (tu/use-standard-fixtures)
 
@@ -36,4 +37,26 @@
 (deftest id-compat
   (let [actual (sprue.repl/show-generated (actual-id))
         expected (slurp (io/resource id-path))]
+    (is (= actual expected))))
+
+(defn derived-entity []
+  (sprue.repl/derive-type (actual-entity) "IdLessBruce" #{"id" "logId"}))
+
+(deftest test-derive-type
+  (let [before-derive (actual-entity)
+        actual (derived-entity)]
+    (is (= (:name actual) "IdLessBruce"))
+    (is (= (count (:fields actual)) 4))                     ;Minus 2 constants, and the two elided fields above
+    (is (= (count (:fields actual)) (- (count (:fields before-derive)) 4)))
+    (is (empty? (set/difference (set (:fields actual))      ;Everything that's in derived is in actual
+                                (set (:fields before-derive)))))
+    (is (= (:flags before-derive) (:flags actual)))))
+
+(def derived-entity-path "repl_test/IdLessBruce.java")
+
+(defn regen-derived [] (sprue.repl/barf-generated (derived-entity) (io/resource derived-entity-path)))
+
+(deftest derive-compat
+  (let [actual (sprue.repl/show-generated (derived-entity))
+        expected (slurp (io/resource derived-entity-path))]
     (is (= actual expected))))
