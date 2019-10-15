@@ -70,9 +70,9 @@
        (->> (.addParameter method-builder)))))
 
 (defn get-supertype-fields [fields flags]
-  (if-let [flag (find-optional-flag flags :base-type)]
-    (filter (comp (:super-ctor-fields flag) :name) fields)
-    nil))
+  (if-let [super-fields (:super-ctor-fields (find-optional-flag flags :base-type))]
+    (filter (comp super-fields :name) fields)
+    '()))
 
 (defn get-instance-fields [fields flags]
   (let [flag (find-optional-flag flags :base-type)
@@ -87,10 +87,10 @@
 (defn add-constructor [class-builder fields flags]
   (let [ctor-builder (-> (MethodSpec/constructorBuilder)
                          (.addModifiers (into-array [Modifier/PUBLIC])))
-        super-fields (get-supertype-fields fields flags)
+        super-fields (seq (get-supertype-fields fields flags))
         fields-to-be-set (get-instance-fields fields flags)]
     (->> fields (map (partial add-parameter ctor-builder)) (dorun))
-    (when super-fields (.addStatement ctor-builder (super-call fields)))
+    (when super-fields (.addStatement ctor-builder (super-call super-fields)))
     (->> fields-to-be-set
          (map set-field)
          (map #(.addStatement ctor-builder %1))

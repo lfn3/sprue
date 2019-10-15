@@ -21,7 +21,6 @@ public class IdLessBruce extends Batman implements Dated {
 
   public IdLessBruce(LocalDate effectiveDate, boolean inEffect, String username,
       @Nullable BigDecimal aField) {
-    super(effectiveDate, inEffect, username, aField);
     this.effectiveDate = effectiveDate;
     this.inEffect = inEffect;
     this.username = username;

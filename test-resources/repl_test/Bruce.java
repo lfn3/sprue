@@ -39,7 +39,6 @@ public class Bruce extends Batman implements Dated {
 
   public Bruce(BruceId id, BruceLogId logId, LocalDate effectiveDate, boolean inEffect,
       String username, @Nullable BigDecimal aField) {
-    super(id, logId, effectiveDate, inEffect, username, aField);
     this.id = id;
     this.logId = logId;
     this.effectiveDate = effectiveDate;
